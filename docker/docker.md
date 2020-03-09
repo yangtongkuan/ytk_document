@@ -64,6 +64,10 @@ systemctl enable dokcer
 
 #### 2. docker 镜像（images）相关命令
 
+* **说明**
+
+  > docker 下载镜像时，如果指定tag的话，tag必须存在。查阅去hub.docker查询；[传送门](https://hub.docker.com/)
+
 ```shell
 #1. 查看本地镜像
 docker images
@@ -184,5 +188,133 @@ docker run ... --volumes-from data_container_name ...
 
 ### 五.docker 应用的部署
 
+#### 1. mysql部署
 
+```shell
+#1.搜索镜像
+docker search mysql
+
+#2.拉去镜像
+docker pull mysql:5.7
+
+#3.创建容器
+docker run -id \
+-p 3306:3306 \
+--name=docker_mysql5.7 \
+-v $PWD/conf:/etc/mysql/conf.d \
+-v $PWD/logs:/logs \
+-v $PWD/data:/var/lib/mysql \
+-e MYSQL_ROOT_PASSWORD=sdbs \
+mysql:5.7
+
+#4.进入容器，操作mysql
+docker exec –it c_mysql /bin/bash
+```
+
+* **-p 3307:3306**：将容器的 3306 端口映射到宿主机的 3307 端口。
+* **-v $PWD/conf:/etc/mysql/conf.d**：将容器的 /etc/mysql/my.cnf挂在到宿主机主机当前目录conf下。配置目录
+* -v $PWD/logs:/logs**：将主机当前目录下的 logs 目录挂载到容器的 /logs。日志目录
+* **-v $PWD/data:/var/lib/mysql** ：将主机当前目录下的data目录挂载到容器的 /var/lib/mysql 。数据目录
+* **-e MYSQL_ROOT_PASSWORD=sdbs：**初始化 root 用户的密码
+
+#### 2.tomcat部署
+
+```shell
+#1. 搜索镜像
+docker search tomcat
+#2. 拉去镜像
+docker pull tomcat:8.5
+#3. 创建容器
+docker run -id --name tomcat8.5\
+-p 8080:8080\
+-v $PWD/webapps:/usr/local/tomcat/webapps\
+tomcat:8.5
+#4.启动容器
+docker start tomcat8.5;
+```
+
+* **参数说明**
+  + **-p 8080:8080：**将容器的8080端口映射到主机的8080端口
+  + **-v $PWD/webapps:/usr/local/tomcat/webapps：**将容器的webapps 挂在到宿主机的webapps下
+
+#### 3.nginx部署
+
+```shell
+#1.搜索镜像
+docker search nginx
+#2. 拉去镜像
+docker pull nginx
+#3. 创建镜像
+mkdir -p ~/nginx/config
+cd ~/nginx/config
+vim nginx.config
+```
+
++++
+
+```shell
+# nginx配置文件
+user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+```
+
++++
+
+```shell
+docker run -id --name=m_nginx \
+-p 80:80 \
+-v $PWD/conf/nginx.conf:/etc/nginx/nginx.conf \
+-v $PWD/logs:/var/log/nginx \
+-v $PWD/html:/usr/share/nginx/html \
+nginx
+```
+
+* **参数说明**：
+  * **-p 80:80**：将容器的 80端口映射到宿主机的 80 端口。
+  * **-v $PWD/conf/nginx.conf:/etc/nginx/nginx.conf**：将主机当前目录下的 /conf/nginx.conf 挂载到容器的 :/etc/nginx/nginx.conf。配置目录
+  * **-v $PWD/logs:/var/log/nginx**：将主机当前目录下的 logs 目录挂载到容器的/var/log/nginx。日志目录
+
+#### 4.redis 部署
+
+```shell
+#1.搜索镜像
+docker search redis
+#2.拉去镜像
+docker pull redis
+#3.创建redis容器
+docker run -id --name=m_redis\
+-p 6379:6379 \
+redis
+#4. 启动redis容器
+docker start m_redis
+```
 
