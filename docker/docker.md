@@ -368,3 +368,44 @@ docker load -i your_tar_name
 | STOPSIGNAL  | 发送信号量到宿主机       | 该STOPSIGNAL指令设置将发送到容器的系统调用信号以退出。       |
 | SHELL       | 指定执行脚本的shell      | 指定RUN CMD ENTRYPOINT 执行命令的时候 使用的shell            |
 
+* 案例1：创建一个centos7
+
+```shell
+# 创建file文件存储路径
+mkdir docker-file
+cd docker-file
+vim centos-file
+# 编辑file文件
+FROM centos:7
+MAITAINER yangtk <yangtongkuan@qq.com>
+RUN yum install -y vim
+WORKDIR /usr
+CMD /bin/bash
+# end
+# 创建镜像
+docker build -f ./centos-file -t yangtk_centos:1 .
+# 启动镜像
+docker run yangtk_centos:1
+```
+
+> **参数说明**
+>
+> -t : 给镜像命名
+>
+> -f: 表示执行的文件
+>
+> FROM: 标识继承哪个镜像
+>
+> MAITAINER：作者信息
+>
+> WORKDIR：设置默认工作路径
+>
+> RUN:标识容器制作时执行的命令脚本,只会在容器启动的时候执行
+>
+> CMD: 容器启动时执行的命令
+
++++
+
+
+
+* 案例2：将springboot项目通过docker发布
