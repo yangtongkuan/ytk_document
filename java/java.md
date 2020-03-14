@@ -47,3 +47,74 @@
    ![](.\images\java_idea_setting_03.png)
 
 5. 重启idea(可有可无 具体看自己的情况)
+
+++++
+
+
+
+### 二、springboot项目使用 **Run Dashboard** 
+
+> 两种方式
+
+* 方式一
+
+1.  找到.idea下面的workspace.xml文件  
+
+   ![](.\images\java_idea_setting_004.png)
+
+2.  在下面的代码中加入一段配置代码  源代码位置 
+
+```xml
+<component name="RunDashboard">
+  <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+   </option>
+    <option name="contentProportion" value="0.22874807" />
+  </component>
+```
+
+> 添加如下配置
+
+```xml
+<option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+</option>
+```
+
+3. 大功告成，idea启动后Run Dashboard 在项目中自动启动。 
+
+```xml
+<component name="RunDashboard">
+ <option name="ruleStates">
+     <list>
+       <RuleState>
+           <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+       </RuleState>
+       <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+       </RuleState>
+     </list>
+  </option>
+  <option name="contentProportion" value="0.22874807" />
+  <option name="configurationTypes">
+     <set>
+          <option value="SpringBootApplicationConfigurationType" />
+     </set>
+  </option>
+ </component>
+```
+
+* 方式二
+
+  > **view ---> Tools Windows---->  Run Dashboard** 
+
+  ![](.\images\java_idea_setting05.png)
