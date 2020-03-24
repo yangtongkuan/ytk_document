@@ -118,3 +118,21 @@
   > **view ---> Tools Windows---->  Run Dashboard** 
 
   ![](.\images\java_idea_setting05.png)
+
+### 三、linux下生成分享图片包含中文乱码问题
+
+#### 1. **产生原因**
+
+> linux下没有微软字体，当设置字体为微软字体时，会出现字体样式找不到
+
+```java
+// For Example
+Font font2 = new Font("微软雅黑", Font.PLAIN, bean.getFontSize());// 添加字体的属性设置
+```
+
+#### 2. 解决方式
+
+>  参考博客 ：https://blog.csdn.net/weixin_39917216/article/details/81698284
+
+++++
+
