@@ -136,3 +136,16 @@ Font font2 = new Font("微软雅黑", Font.PLAIN, bean.getFontSize());// 添加�
 
 ++++
 
+### 四、idea下.gitignore文件不生效的解决方式
+
+```sh
+# 1.清除本地缓存
+git rm -r --cached .
+# 2. 重新加入 
+git add .
+# 3. 提交到本地并提交到仓库
+git commit -m '.gitignore modify'
+#
+git push origin master
+```
+
