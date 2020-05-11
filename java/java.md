@@ -149,3 +149,106 @@ git commit -m '.gitignore modify'
 git push origin master
 ```
 
++++++
+
+### 五. springboot项目jar 启动脚本
+
+> 1. 编写启动脚本 如下
+
+```shell
+#!/bin/bash
+#这里可替换为你自己的执行程序，其他代码无需更改
+APP_NAME=xxx-1.0-SNAPSHOT.jar
+APP_LOG_NAME=log-xx.out
+ 
+#使用说明，用来提示输入参数
+usage() {
+    echo "Usage: sh pay.sh [start|stop|restart|status]"
+    exit 1
+}
+ 
+#检查程序是否在运行
+is_exist(){
+  pid=`ps -ef|grep $APP_NAME|grep -v grep|awk '{print $2}' `
+  #如果不存在返回1，存在返回0     
+  if [ -z "${pid}" ]; then
+   return 1
+  else
+    return 0
+  fi
+}
+ 
+#启动方法
+start(){
+  is_exist
+  if [ $? -eq "0" ]; then
+    echo "${APP_NAME} is already running. pid=${pid} ."
+  else
+    nohup java -jar $APP_NAME > $APP_LOG_NAME 2>&1 &
+  fi
+}
+ 
+#停止方法
+stop(){
+  is_exist
+  if [ $? -eq "0" ]; then
+    kill -9 $pid
+  else
+    echo "${APP_NAME} is not running"
+  fi  
+}
+ 
+#输出运行状态
+status(){
+  is_exist
+  if [ $? -eq "0" ]; then
+    echo "${APP_NAME} is running. Pid is ${pid}"
+  else
+    echo "${APP_NAME} is NOT running."
+  fi
+}
+ 
+#重启
+restart(){
+  stop
+  start
+}
+ 
+#根据输入参数，选择执行对应方法，不输入则执行使用说明
+case "$1" in
+  "start")
+    start
+    ;;
+  "stop")
+    stop
+    ;;
+  "status")
+    status
+    ;;
+  "restart")
+    restart
+    ;;
+  *)
+    usage
+    ;;
+esac
+
+```
+
+> 2. 将脚本和jar文件放在同一文件下 执行如下命令
+
+```shell
+# 设置脚本文件可以执行
+chmod +x xxx.sh 
+# 启动命令
+./xxx.sh start
+# 查看运行状态
+./xxx.sh status
+# 停止运行
+./xxx.sh stop
+# 重启
+./xxx.sh restart
+# 查看项目启动日志
+tail -f log-xxx.out
+```
+
