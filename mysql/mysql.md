@@ -116,6 +116,84 @@ SELECT * FROM score WHERE c_no IN (SELECT co.no FROM course AS co INNER JOIN tea
 
 --  21. 多表查询
 -- 查询某选修课程多于5个同学的教师姓名
+-- 在此之前向 score 插入一些数据，以便丰富查询条件。
+INSERT INTO score VALUES ('101', '3-105', '90');
+INSERT INTO score VALUES ('102', '3-105', '91');
+INSERT INTO score VALUES ('104', '3-105', '89');
+-- 单个子查询
+SELECT te.* FROM teacher AS te INNER JOIN course co ON te.no = co.t_no WHERE co.no IN (SELECT c_no FROM score GROUP BY c_no HAVING COUNT(1)>4);
+
+-- 22.查询 “计算机系” 课程的成绩表。
+
+SELECT * FROM score WHERE c_no IN (SELECT co.no FROM course co INNER JOIN teacher te ON co.t_no = te.no AND te.department = '计算机系');
+
+-- 23. UNION 和 NOTIN 的使用
+-- 查询 计算机系 与 电子工程系 中的不同职称的教师
+-- NOT: 代表逻辑非
+SELECT * FROM teacher WHERE department = '计算机系' AND profession NOT IN (
+    SELECT profession FROM teacher WHERE department = '电子工程系'
+)
+-- 合并两个集
+UNION
+SELECT * FROM teacher WHERE department = '电子工程系' AND profession NOT IN (
+    SELECT profession FROM teacher WHERE department = '计算机系'
+);
+
+-- 24. 查询课程 3-105 且成绩 至少 高于 3-245 的 score 表。
+-- any 
+SELECT * FROM score WHERE c_no = '3-105' AND degree > ANY (SELECT degree FROM score WHERE c_no = '3-245') ORDER BY degree DESC;
+-- min
+SELECT * FROM score WHERE c_no ='3-105' AND degree > (SELECT MIN(degree) FROM score WHERE c_no = '3-245') ORDER BY degree DESC;
+
+-- 25. 查询课程 3-105 且成绩高于 3-245 的 score 表。
+-- ALL 表示所有
+SELECT * FROM score WHERE c_no = '3-105' AND degree > ALL (SELECT degree FROM score WHERE c_no = '3-245');
+-- max 大于最大就是所有
+SELECT * FROM score WHERE c_no = '3-105' AND degree > (SELECT MAX(degree) FROM score WHERE c_no ='3-245');
+
+-- 26. 查询某课程成绩比该课程平均成绩低的 score 表。
+--
+SELECT * FROM score a WHERE degree < (SELECT AVG(degree) FROM score b WHERE a.c_no = b.c_no);
+-- left join
+SELECT a.* FROM score a LEFT JOIN (SELECT c_no,AVG(degree) AS degree FROM score  GROUP BY c_no) AS b ON a.c_no = b.c_no WHERE a.degree < b.degree;
+
+-- 27. 查询所有任课 ( 在 course 表里有课程 ) 教师的 name 和 department 
+-- a
+SELECT te.name,te.department FROM teacher te WHERE te.no IN (SELECT t_no FROM course);
+-- b
+SELECT DISTINCT te.name , department FROM teacher  te INNER JOIN course  co ON te.no = co.t_no;
+
+-- 28. 条件加组筛选
+-- 查询 student 表中至少有 2 名男生的 class
+-- where 与 having 的区别  where 是在分组条件之前进行执行，having是在分组条件之后进行筛选
+SELECT class FROM student WHERE sex ='男' GROUP BY class HAVING COUNT(*) > 1;
+
+-- 29. NOTLIKE 模糊查询取反
+-- 查询 student 表中不姓 "王" 的同学记录
+--  not like 
+SELECT * FROM student WHERE NAME NOT LIKE '王%';
+
+-- 30.YEAR 与 NOW 函数
+-- 查询 student 表中每个学生的姓名和年龄
+SELECT NAME,YEAR(NOW())-YEAR(birthday) AS age FROM student;
+
+-- 31. MAX 与 MIN 函数
+-- 查询 student 表中最大和最小的 birthday 值
+SELECT MIN(birthday),MAX(birthday) FROM student;
+
+-- 32.多段排序
+-- 以 class 和 birthday 从大到小的顺序查询 student 表。
+SELECT * FROM student ORDER BY class DESC, birthday DESC;
+
+-- 33. 查询 "男" 教师及其所上的课程。
+SELECT te.* FROM course co INNER JOIN teacher te ON co.t_no = te.no AND te.sex='男';
+
+-- 34. MAX 函数与子查询
+-- 查询最高分同学的 score 表。
+SELECT * FROM score WHERE degree = (SELECT MAX(degree) FROM score);
+
+-- 35. 查询和 "李军" 同性别的所有同学 name 。
+SELECT NAME,sex FROM student WHERE sex = (SELECT sex FROM student WHERE NAME ='李军');
 
 ```
 
