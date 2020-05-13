@@ -195,5 +195,49 @@ SELECT * FROM score WHERE degree = (SELECT MAX(degree) FROM score);
 -- 35. 查询和 "李军" 同性别的所有同学 name 。
 SELECT NAME,sex FROM student WHERE sex = (SELECT sex FROM student WHERE NAME ='李军');
 
+-- 36. 查询和 "李军" 同性别且同班的同学 name 
+-- . a子查询
+SELECT NAME, sex, class FROM student WHERE sex = (SELECT sex FROM student WHERE NAME = '李军') AND class = (SELECT class FROM student WHERE NAME = '李军');
+-- . b关联查询
+SELECT a.name,a.sex FROM student a INNER JOIN student b ON a.sex = b.sex AND a.class =b.class AND b.name='李军';
+
+-- 37. 查询所有选修 "计算机导论" 课程的 "男" 同学成绩表。
+-- inner join 
+SELECT sc.* FROM score sc INNER JOIN course co ON sc.c_no = co.no AND co.name='计算机导论'  INNER JOIN student st ON st.no = sc.s_no AND st.sex='男' ; 
+-- left join 特别说明  
+SELECT sc.* FROM score sc LEFT JOIN course co ON sc.c_no = co.no  LEFT JOIN student st ON st.no = sc.s_no WHERE  st.sex='男' AND co.name='计算机导论';
+-- 38. 按等级查询
+CREATE TABLE grade (
+    low INT(3),
+    upp INT(3),
+    grade CHAR(1)
+);
+
+INSERT INTO grade VALUES (90, 100, 'A');
+INSERT INTO grade VALUES (80, 89, 'B');
+INSERT INTO grade VALUES (70, 79, 'C');
+INSERT INTO grade VALUES (60, 69, 'D');
+INSERT INTO grade VALUES (0, 59, 'E'); 
+SELECT * FROM grade;
+-- 
+SELECT sc.s_no,sc.c_no,sc.degree, gr.grade FROM score sc, grade gr WHERE sc.degree BETWEEN gr.low AND gr.upp; 
+
+-- 连接查询
+
+CREATE DATABASE testJoin;
+CREATE TABLE person (
+    id INT,
+    NAME VARCHAR(20),
+    cardId INT
+);
+CREATE TABLE card (
+    id INT,
+    NAME VARCHAR(20)
+);
+INSERT INTO card VALUES (1, '饭卡'), (2, '建行卡'), (3, '农行卡'), (4, '工商卡'), (5, '邮政卡');
+
+INSERT INTO person VALUES (1, '张三', 1), (2, '李四', 3), (3, '王五', 6);
+SELECT * FROM person;
+
 ```
 
