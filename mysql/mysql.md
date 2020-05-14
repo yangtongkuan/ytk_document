@@ -3,6 +3,95 @@
 ### mysql查询练习
 
 ```sql
+-- 数据准备
+-- 创建数据库
+CREATE DATABASE select_test;
+-- 切换数据库
+USE select_test;
+
+-- 创建学生表
+CREATE TABLE student (
+    NO VARCHAR(20) PRIMARY KEY,
+    NAME VARCHAR(20) NOT NULL,
+    sex VARCHAR(10) NOT NULL,
+    birthday DATE, -- 生日
+    class VARCHAR(20) -- 所在班级
+);
+
+-- 创建教师表
+CREATE TABLE teacher (
+    NO VARCHAR(20) PRIMARY KEY,
+    NAME VARCHAR(20) NOT NULL,
+    sex VARCHAR(10) NOT NULL,
+    birthday DATE,
+    profession VARCHAR(20) NOT NULL, -- 职称
+    department VARCHAR(20) NOT NULL -- 部门
+);
+
+-- 创建课程表
+CREATE TABLE course (
+    NO VARCHAR(20) PRIMARY KEY,
+    NAME VARCHAR(20) NOT NULL,
+    t_no VARCHAR(20) NOT NULL, -- 教师编号
+    -- 表示该 tno 来自于 teacher 表中的 no 字段值
+    FOREIGN KEY(t_no) REFERENCES teacher(NO) 
+);
+
+-- 成绩表
+CREATE TABLE score (
+    s_no VARCHAR(20) NOT NULL, -- 学生编号
+    c_no VARCHAR(20) NOT NULL, -- 课程号
+    degree DECIMAL,	-- 成绩
+    -- 表示该 s_no, c_no 分别来自于 student, course 表中的 no 字段值
+    FOREIGN KEY(s_no) REFERENCES student(NO),	
+    FOREIGN KEY(c_no) REFERENCES course(NO),
+    -- 设置 s_no, c_no 为联合主键
+    PRIMARY KEY(s_no, c_no)
+);
+
+-- 查看所有表
+SHOW TABLES;
+
+-- 添加学生表数据
+INSERT INTO student VALUES('101', '曾华', '男', '1977-09-01', '95033');
+INSERT INTO student VALUES('102', '匡明', '男', '1975-10-02', '95031');
+INSERT INTO student VALUES('103', '王丽', '女', '1976-01-23', '95033');
+INSERT INTO student VALUES('104', '李军', '男', '1976-02-20', '95033');
+INSERT INTO student VALUES('105', '王芳', '女', '1975-02-10', '95031');
+INSERT INTO student VALUES('106', '陆军', '男', '1974-06-03', '95031');
+INSERT INTO student VALUES('107', '王尼玛', '男', '1976-02-20', '95033');
+INSERT INTO student VALUES('108', '张全蛋', '男', '1975-02-10', '95031');
+INSERT INTO student VALUES('109', '赵铁柱', '男', '1974-06-03', '95031');
+
+-- 添加教师表数据
+INSERT INTO teacher VALUES('804', '李诚', '男', '1958-12-02', '副教授', '计算机系');
+INSERT INTO teacher VALUES('856', '张旭', '男', '1969-03-12', '讲师', '电子工程系');
+INSERT INTO teacher VALUES('825', '王萍', '女', '1972-05-05', '助教', '计算机系');
+INSERT INTO teacher VALUES('831', '刘冰', '女', '1977-08-14', '助教', '电子工程系');
+
+-- 添加课程表数据
+INSERT INTO course VALUES('3-105', '计算机导论', '825');
+INSERT INTO course VALUES('3-245', '操作系统', '804');
+INSERT INTO course VALUES('6-166', '数字电路', '856');
+INSERT INTO course VALUES('9-888', '高等数学', '831');
+
+-- 添加添加成绩表数据
+INSERT INTO score VALUES('103', '3-105', '92');
+INSERT INTO score VALUES('103', '3-245', '86');
+INSERT INTO score VALUES('103', '6-166', '85');
+INSERT INTO score VALUES('105', '3-105', '88');
+INSERT INTO score VALUES('105', '3-245', '75');
+INSERT INTO score VALUES('105', '6-166', '79');
+INSERT INTO score VALUES('109', '3-105', '76');
+INSERT INTO score VALUES('109', '3-245', '68');
+INSERT INTO score VALUES('109', '6-166', '81');
+
+-- 查看表结构
+SELECT * FROM course;
+SELECT * FROM score;
+SELECT * FROM student;
+SELECT * FROM teacher;
+
 -- 1.查询 student 表的所有行 
 
 SELECT * FROM student;
@@ -238,6 +327,69 @@ INSERT INTO card VALUES (1, '饭卡'), (2, '建行卡'), (3, '农行卡'), (4, '
 
 INSERT INTO person VALUES (1, '张三', 1), (2, '李四', 3), (3, '王五', 6);
 SELECT * FROM person;
+
+-- 39.要查询这两张表中有关系的数据，可以使用 INNER JOIN ( 内连接 ) 将它们连接在一起。
+SELECT * FROM person pe INNER JOIN card ca ON pe.cardId = ca.id;
+
+-- 40.完整显示左边的表 ( person ) ，右边的表如果符合条件就显示，不符合则补 NULL 。
+SELECT * FROM person pe LEFT JOIN card ca ON pe.cardId = ca.id;
+
+-- 41. 完整显示右边的表 ( card ) ，左边的表如果符合条件就显示，不符合则补 NULL 。
+SELECT * FROM person pe RIGHT JOIN card ca ON pe.cardId = ca.id;
+
+-- 42.完整显示两张表的全部数据。
+--  MySQL 不支持这种语法的全外连接
+-- MySQL全连接语法，使用 UNION 将两张表合并在一起。
+SELECT * FROM person LEFT JOIN card ON person.cardId = card.id
+UNION
+SELECT * FROM person RIGHT JOIN card ON person.cardId = card.id;
+
+-- 事务
+-- 在 MySQL 中，事务其实是一个最小的不可分割的工作单元。事务能够保证一个业务的完整性。
+-- 如何控制事务 commit; 提交 rollback; 回滚
+-- 查询自动提交事务是否开启
+SELECT @@AutoCommit;
+-- 自动提交的作用：当我们执行一条 SQL 语句的时候，其产生的效果就会立即体现出来，且不能回滚。
+-- 设置事务不自动提交
+SET autoCommit = 0;
+-- 设置事务不自动提交 需要执行sql后  执行commit或者rollback;
+-- 手动开启事务的两种方式
+-- start transaction;
+-- begin;
+ 
+-- 事务的 ACID 特征与使用 ACID
+-- A 原子性：事务是最小的单位，不可以再分割;
+-- C 一致性：要求同一事务中的 SQL 语句，必须保证同时成功或者失败;
+-- I 隔离性：事务1 和 事务2 之间是具有隔离性的;
+-- D 持久性：事务一旦结束 ( COMMIT ) ，就不可以再返回了 ( ROLLBACK ) .
+
+-- 事务的四大隔离级别 ( 性能从低到高 ) ;
+-- READ UNCOMMITTED ( 读取未提交 ) 如果有多个事务，那么任意事务都可以看见其他事务的未提交数据。 会出现脏读
+
+-- READ COMMITTED ( 读取已提交 ) 只能读取到其他事务已经提交的数据。 会出现不可重复读问题
+
+-- REPEATABLE READ ( 可被重复读 ) 如果有多个连接都开启了事务，那么事务之间不能共享数据记录，否则只能共享已提交的记录。 会出现幻读
+
+-- SERIALIZABLE ( 串行化 ) 所有的事务都会按照固定顺序执行，执行完一个事务后再继续执行下一个事务的写入操作。 性能太低
+
+-- 查看数据库的隔离级别
+-- mysql 8.0 以前版本
+-- 全局的
+SELECT @@GLOBAL.TX_ISOLATION;
+-- 会话级别的
+SELECT @@TX_ISOLATION;
+
+-- mysql 8.0 以后版本
+-- 全局的
+SELECT  @@GLOBAL.TRANSACTION_ISOLATION;
+-- 会话级别的
+SELECT @@TRANSACTION_ISOLATION;
+
+-- 修改隔离级别
+SET GLOBAL TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+
+-- 参考 git : https://github.com/hjzCy/sql_node/blob/master/mysql/MySQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.md
 
 ```
 
