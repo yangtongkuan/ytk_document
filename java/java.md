@@ -1,6 +1,6 @@
 ## java学习笔记
 
-### 一。springboot使用热部署
+### 一、springboot使用热部署
 
 1.  添加热部署jar
 
@@ -151,9 +151,9 @@ git push origin master
 
 +++++
 
-### 五. springboot项目jar 启动脚本
+### 五、springboot项目jar 启动脚本
 
-> 1. 编写启动脚本 如下
+#### 1. 编写启动脚本 如下
 
 ```shell
 #!/bin/bash
@@ -235,7 +235,7 @@ esac
 
 ```
 
-> 2. 将脚本和jar文件放在同一文件下 执行如下命令
+#### 2.将脚本和jar文件放在同一文件下 执行如下命令
 
 ```shell
 # 设置脚本文件可以执行

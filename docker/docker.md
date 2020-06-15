@@ -206,9 +206,16 @@ docker run -id \
 -v $PWD/data:/var/lib/mysql \
 -e MYSQL_ROOT_PASSWORD=sdbs \
 mysql:5.7
-
+# 3.1
+docker run -p 3308:3306 --name mysql5.7_01 -v $PWD/conf:/etc/mysql/conf.d  -v $PWD/logs:/logs -v $PWD/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=sdbs -d mysql:5.7
 #4.进入容器，操作mysql
 docker exec –it c_mysql /bin/bash
+#5.授权所有的ip都能访问
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'sdbs' WITH GRANT OPTION;
+# 刷新权限
+flush privileges;
+# 查看mysql的字符集
+SHOW VARIABLES LIKE 'character%';
 ```
 
 * **-p 3307:3306**：将容器的 3306 端口映射到宿主机的 3307 端口。
