@@ -14,6 +14,16 @@ sudo yum install docker-ce
 #sudo yum install docker-ce-18.06.1.ce  
 #4. 查看docker版本
 docker -v
+### 卸载docker 查看docker是否在运行
+systemctl status docker
+## 写在docker 首先停止docker
+systemctl stop docker
+## 查看docker安装
+yum list installed | grep docker
+## 卸载docker 
+yum remove docker-* -y
+## 删除docker的下载镜像
+rm -rf /var/lib/docker
 ```
 
 ### 二.使用加速器（以阿里云为例）
@@ -59,7 +69,7 @@ systemctl stop docker
 #4.重启docker服务
 systemctl restart docker
 #5.开机自动启动docker服务
-systemctl enable dokcer
+systemctl enable docker
 ```
 
 #### 2. docker 镜像（images）相关命令
@@ -323,6 +333,8 @@ docker run -id --name=m_redis\
 redis
 #4. 启动redis容器
 docker start m_redis
+# 5. 部署redis 并设置挂在点
+docker run -p 6379:6379 --name redis -v /usr/local/docker/redis/data:/data -v /usr/local/docker/redis/conf/redis.conf:/etc/redis/redis.conf -d redis redis-server /etc/redis/redis.conf
 ```
 
 ### 六.docker容器制作
