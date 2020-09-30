@@ -17,12 +17,12 @@ CREATE TABLE `sys_tenant` (
   `county` VARCHAR (20) DEFAULT NULL COMMENT '区县',
   `address` VARCHAR (64) DEFAULT NULL COMMENT '地址',
   `note` VARCHAR (200) DEFAULT NULL COMMENT '备注',
-  `for_ever` BIT(1) DEFAULT '0' COMMENT '是否长期有效',
-  `expire_time` TIMESTAMP DEFAULT NULL COMMENT '到期时间',
-  `last_renewal_time` TIMESTAMP DEFAULT NULL COMMENT '最后续期时间',
-  `del_flag` BIT(1) DEFAULT '0' COMMENT '是否删除',
+  `for_ever` INT(1) DEFAULT '0' COMMENT '是否长期有效',
+  `expire_time` DATETIME DEFAULT NULL COMMENT '到期时间',
+  `last_renewal_time` DATETIME DEFAULT NULL COMMENT '最后续期时间',
+  `del_flag` INT(1) DEFAULT '0' COMMENT '是否删除',
   `del_user_id` BIGINT(20) DEFAULT NULL COMMENT '删除者id',
-  `create_time` TIMESTAMP DEFAULT NULL COMMENT '创建时间',
+  `create_time` DATETIME DEFAULT NULL COMMENT '创建时间',
   `create_user_id` BIGINT (20) DEFAULT NULL COMMENT '创建者id',
   PRIMARY KEY (`tenant_id`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8mb4 COMMENT = '系统租户';
@@ -36,8 +36,8 @@ CREATE TABLE `user_info` (
   `tenant_id` BIGINT (20) NOT NULL COMMENT '租户id',
   `user_name` VARCHAR (50) DEFAULT NULL COMMENT '账号_系統生成',
   `name` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
-  `name` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
-  `phone` VARCHAR(20) DEFAULT NULL COMMENT '手机号',
+  `phone` VARCHAR(20) DEFAULT NULL COMMENT '绑定电话',
+  `tel_phone` VARCHAR(20) DEFAULT NULL COMMENT '联系电话',
   `email` VARCHAR(64) DEFAULT NULL COMMENT '邮箱',
   `sign_photo` VARCHAR(128) DEFAULT NULL COMMENT '头像',
   `signature` VARCHAR(128) DEFAULT NULL COMMENT '个性签名',
@@ -45,12 +45,31 @@ CREATE TABLE `user_info` (
   `city` VARCHAR (20) DEFAULT NULL COMMENT '市',
   `county` VARCHAR (20) DEFAULT NULL COMMENT '区县',
   `address` VARCHAR (64) DEFAULT NULL COMMENT '地址',
-  `lock` BIT(1) DEFAULT '0' COMMENT '是否锁定',
-  `del_flag` BIT(1) DEFAULT '0' COMMENT '是否删除',
+  `lock` TINYINT(1) DEFAULT '0' COMMENT '是否锁定',
+  `del_flag` TINYINT(1) DEFAULT '0' COMMENT '是否删除',
   `del_user_id` BIGINT(20) DEFAULT NULL COMMENT '删除者id',
-  `create_time` TIMESTAMP DEFAULT NULL COMMENT '创建时间',
+  `create_time` DATETIME DEFAULT NULL COMMENT '创建时间',
   `create_user_id` BIGINT (20) DEFAULT NULL COMMENT '创建者id',
-  PRIMARY KEY (`tenant_id`)
+  PRIMARY KEY (`user_id`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8mb4 COMMENT = '用户信息';
+```
+
+#### 3.  用户密码表
+
+```mysql
+CREATE TABLE `user_imp_info` (
+  `user_imp_id` INT(10) NOT NULL AUTO_INCREMENT,
+  `tenant_id` BIGINT(20) NOT NULL COMMENT '租户id',
+  `user_id` BIGINT(20) NOT NULL COMMENT '用户id',
+  `passwd` VARCHAR(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '密码',
+  `salt` VARCHAR(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '盐值',
+  `note` VARCHAR(256) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '备注',
+  `delFlag` INT(1) DEFAULT '0' COMMENT '是否已删除(1已删除，0未删除)',
+  `create_user_id` BIGINT(20) DEFAULT NULL COMMENT '创建者id',
+  `create_time` DATETIME DEFAULT NULL COMMENT '创建日期  141231212423423时间戳毫秒级标识',
+  `del_user_id` BIGINT(20)  DEFAULT NULL COMMENT '删除者id',
+  PRIMARY KEY (`user_imp_id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+
 ```
 
